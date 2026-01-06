@@ -11,12 +11,14 @@ load_dotenv()
 class SupportResponse(BaseModel):
     """Customer support agent's response"""
     response: str
-    helpful: bool
+    was_completed: bool
 
-# Create customer support agent
+
 support_agent = Agent   (
+    # TODO 1: go to https://openrouter.ai/models, choose model and 
     'openrouter:TODO: Add model here',
     instructions=(
+        # TODO 2: Add agent instruction to be a customer support agent
         "TODO: Add instructions here"
     ),
     output_type=SupportResponse,
@@ -25,6 +27,9 @@ support_agent = Agent   (
 
 def main():
     """Simple example of running the customer support agent"""
+
+    
+    # TODO 3: Add sample query to be a customer support query
     query = "TODO: Add query here"
     
     result = support_agent.run_sync(query)
