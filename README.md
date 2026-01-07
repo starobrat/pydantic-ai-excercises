@@ -38,5 +38,5 @@ echo "OPENROUTER_API_KEY=your_openrouter_api_key_here" > .env
 Then run the customer support agent:
 
 ```bash
-python excercise1/customer_support_agent.py 
+python excercise/customer_support_agent.py
 ```
