@@ -7,6 +7,9 @@ import gradio as gr
 # Załaduj zmienne środowiskowe z pliku .env
 load_dotenv()
 
+# Globalna historia wiadomości
+message_history = []
+
 
 class JokeResponse(BaseModel):
     joke: str
@@ -18,6 +21,7 @@ agent = Agent(
     instructions=(
         "Jesteś specjalistą od opowiadania dowcipów."
         "Wylosuj typ dowcipu i opowiedz dowcip w wylosowanym typie."
+        "Użytkownik poda temat dowcipu, a ty opowiedz dowcip w wylosowanym typie."
     ),
     output_type=JokeResponse,
 )
@@ -31,7 +35,11 @@ def get_joke_topic_tool() -> str:
 
 
 def handle_chat(message: str, history: list[tuple[str, str]]) -> str:
-    result = agent.run_sync(message)
+    global message_history
+
+    result = agent.run_sync(message, message_history=message_history)
+    
+    message_history = result.all_messages()
     reply = f"{result.output.joke}\n\nTyp dowcipu: {result.output.joke_type}"
     return reply
 
