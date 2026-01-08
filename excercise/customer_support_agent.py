@@ -7,13 +7,9 @@ from pydantic_ai.models.openai import OpenAIChatModel
 load_dotenv()
 
 
-
-
-
 class SupportResponse(BaseModel):
     """Customer support agent's response"""
     response: str
-    was_completed: bool
 
 
 support_agent = Agent   (
@@ -40,3 +36,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
