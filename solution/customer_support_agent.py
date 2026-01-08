@@ -1,10 +1,14 @@
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from pydantic_ai import Agent
+import gradio as gr
 from tools.orders_management import create_order, get_order_status, cancel_order
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Globalna historia wiadomości
+message_history = []
 
 
 class SupportResponse(BaseModel):
@@ -19,7 +23,7 @@ support_agent = Agent   (
     instructions=(
         "Jesteś specjalistą od obsługi klienta."
         "Zadbaj o to, aby klient był zadowolony z odpowiedzi."
-        
+
     ),
     output_type=SupportResponse,
 )
@@ -42,7 +46,38 @@ def cancel_order_tool(order_id: str, username: str, reason: str) -> str:
     """Cancel an order and update its status in database"""
     return cancel_order(order_id, username, reason)
 
-def main():
+
+def handle_chat(message: str, history: list[tuple[str, str]]) -> str:
+    global message_history
+
+    result = support_agent.run_sync(message, message_history=message_history)
+    
+    message_history = result.all_messages()
+    reply = result.output.response
+    
+    if result.output.order_id:
+        reply += f"\n\nID zamówienia: {result.output.order_id}"
+    if result.output.order_status:
+        reply += f"\nStatus zamówienia: {result.output.order_status}"
+    
+    return reply
+
+
+demo = gr.ChatInterface(
+    fn=handle_chat,
+    title="Pydantic AI — Agent wsparcia klienta",
+    description=(
+        "Agent obsługi klienta pomagający w zarządzaniu zamówieniami."
+    ),
+)
+
+
+if __name__ == "__main__":
+    demo.launch()
+
+
+
+def main_cli():
     """Simple example of running the customer support agent"""
     
     query = "Chcę kupić laptopa"
@@ -52,7 +87,3 @@ def main():
     result = support_agent.run_sync(query)
     print(f"Customer Query: {query}")
     print(f"Support Response: {result.output.response}")
-
-
-if __name__ == "__main__":
-    main()
