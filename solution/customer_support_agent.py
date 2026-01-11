@@ -45,9 +45,10 @@ WAŻNE:
 """
 
 support_agent = Agent(
-    'openrouter:google/gemini-2.5-flash',
+    'openrouter:anthropic/claude-haiku-4.5',
     instructions=SYSTEM_INSTRUCTIONS,
     output_type=SupportResponse,
+    retries=3,
 )
 
 
